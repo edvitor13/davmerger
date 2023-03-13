@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "davmerger"
+version = "0.1.0"
+description = ""
+authors = ["Vitor Gabriel <edvitor13@hotmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+ffmpeg-python = "^0.2.0"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.2.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
