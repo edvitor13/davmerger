@@ -35,9 +35,9 @@ FFmpeg é um software livre e de código aberto usado para converter e manipular
 
 Link de Download: https://ffmpeg.org/download.html
 
-Como instalar no `Windows`: https://pt.wikihow.com/Instalar-o-FFmpeg-no-Windows
-Como instalar no `Linux`: https://www.hostinger.com.br/tutoriais/como-instalar-ffmpeg
-Como instalar no `MacOS`: https://www.youtube.com/watch?v=8nbuqYw2OCw
+- Como instalar no `Windows`: https://pt.wikihow.com/Instalar-o-FFmpeg-no-Windows
+- Como instalar no `Linux`: https://www.hostinger.com.br/tutoriais/como-instalar-ffmpeg
+- Como instalar no `MacOS`: https://www.youtube.com/watch?v=8nbuqYw2OCw
 
 Para verificar se realmente está instalado envie o seguinte comando no terminal:
 
