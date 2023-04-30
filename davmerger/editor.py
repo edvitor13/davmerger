@@ -34,6 +34,7 @@ class Editor:
             vcodec=codec, 
             maxrate=maxrate,
             preset=preset,
+            r=30,
             s=f'{width}x{height}'
         )
 
