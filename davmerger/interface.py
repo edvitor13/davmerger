@@ -15,6 +15,7 @@ class Interface:
         self.height: int = 720
         self.speed: float = 64.0
         self.quality: str = 'veryfast'
+        self.direction: str = 'normal'
 
 
     def _choice_files(self) -> tuple[str]:
@@ -55,6 +56,9 @@ class Interface:
 
         if self.is_cancel:
             return False
+        
+        if self.direction != 'normal':
+            self.videos = tuple(reversed(list(self.videos)))
 
         try:
             ed = Editor(self.videos)
@@ -120,11 +124,21 @@ class VideoSettingsDialog:
         ])
         self.cmb_quality.grid(row=3, column=1, padx=5, pady=5)
 
+        # Inversao
+        lbl_direction = tk.Label(self.dialog, text="Direção:")
+        lbl_direction.grid(row=4, column=0, padx=5, pady=5)
+        self.direction_var = tk.StringVar(self.dialog)
+        self.direction_var.set("normal")
+        self.cmb_direction = ttk.OptionMenu(self.dialog, self.direction_var, "normal", *[
+            "normal", "inverse"
+        ])
+        self.cmb_direction.grid(row=4, column=1, padx=5, pady=5)
+
         # Crie os botões Cancelar/Salvar
         btn_cancel = tk.Button(self.dialog, text="Cancelar", command=self.cancel)
-        btn_cancel.grid(row=4, column=0, padx=5, pady=5)
+        btn_cancel.grid(row=5, column=0, padx=5, pady=5)
         btn_save = tk.Button(self.dialog, text="Iniciar", command=self.save_settings)
-        btn_save.grid(row=4, column=1, padx=5, pady=5)
+        btn_save.grid(row=5, column=1, padx=5, pady=5)
 
         self.quality_var.set(self.interface.quality)
         self.dialog.mainloop()
@@ -147,6 +161,7 @@ class VideoSettingsDialog:
         height = self.ent_height.get()
         speed = self.ent_speed.get()
         quality = self.quality_var.get()
+        direction = self.direction_var.get()
 
         # Valide os valores inseridos pelo usuário
         if not width or not height or not speed:
@@ -174,5 +189,6 @@ class VideoSettingsDialog:
         self.interface.height = height
         self.interface.speed = speed
         self.interface.quality = quality
+        self.interface.direction = direction
         
         self.destroy()
