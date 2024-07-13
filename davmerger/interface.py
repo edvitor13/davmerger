@@ -5,18 +5,28 @@ from typing import Literal
 from .editor import Editor
 
 
+import tkinter as tk
+from tkinter import ttk, messagebox
+from typing import Literal
+
+
+import tkinter as tk
+from tkinter import ttk, messagebox
+from typing import Literal
+
+
 class Interface:
 
     def __init__(self) -> None:
         self.videos: tuple[str] = self._choice_files()
         self.output_filename: str = self._ask_output_filename()
         self.is_cancel: bool = False
-        self.width: int = 1280
-        self.height: int = 720
+        self.width: int = 1920
+        self.height: int = 1080
         self.speed: float = 64.0
         self.quality: str = 'veryfast'
         self.direction: str = 'normal'
-
+        self.include_audio: bool = True  # Adiciona a opção de incluir áudio
 
     def _choice_files(self) -> tuple[str]:
         from tkinter import Tk, filedialog
@@ -35,7 +45,6 @@ class Interface:
         
         return videos
 
-
     def _ask_output_filename(self) -> str:
         from tkinter import Tk, filedialog
         Tk().withdraw()
@@ -47,7 +56,6 @@ class Interface:
         )
 
         return file_path
-
 
     def save_video(self) -> bool:
         root = tk.Tk()
@@ -67,17 +75,17 @@ class Interface:
                 speed_times=self.speed,
                 preset=self.quality,
                 width=self.width,
-                height=self.height
+                height=self.height,
+                use_audio=self.include_audio  # Adiciona a opção de incluir áudio
             )
-        except:
+        except Exception as e:
             messagebox.showerror(
                 "Erro", 
-                "Falha ai salvar vídeo"
+                f"Falha ao salvar vídeo: {e}"
             )
             return False
         
         return True
-
 
 
 class VideoSettingsDialog:
@@ -85,83 +93,99 @@ class VideoSettingsDialog:
     def __init__(self, parent, interface: Interface) -> None:
         self.parent = parent
         self.interface = interface
+        self.resolutions = [(1280, 720), (1920, 1080), (2560, 1440), (3840, 2160)]
+        self.current_resolution_index = 1  # Inicializa com 1920x1080
 
         # Crie a janela e configure o título
         self.dialog = tk.Toplevel(parent)
         self.dialog.title("Configurações do vídeo")
         self.dialog.protocol("WM_DELETE_WINDOW", self.cancel)
 
-        # Crie a entrada de largura
+        # Botão para ciclar resoluções
+        self.btn_cycle_resolution = tk.Button(self.dialog, text="Alterar Resolução", command=self.cycle_resolution)
+        self.btn_cycle_resolution.grid(row=0, columnspan=2, padx=5, pady=5)
+
         # Crie a entrada de largura
         lbl_width = tk.Label(self.dialog, text="Largura:", anchor="e")
-        lbl_width.grid(row=0, column=0, padx=5, pady=5, columnspan=1)
+        lbl_width.grid(row=1, column=0, padx=5, pady=5, columnspan=1)
         self.ent_width = tk.Entry(self.dialog)
-        self.ent_width.grid(row=0, column=1, padx=5, pady=5)
+        self.ent_width.grid(row=1, column=1, padx=5, pady=5)
         self.ent_width.insert(0, str(self.interface.width))
 
         # Crie a entrada de altura
         lbl_height = tk.Label(self.dialog, text="Altura:", anchor="e")
-        lbl_height.grid(row=1, column=0, padx=5, pady=5, columnspan=1)
+        lbl_height.grid(row=2, column=0, padx=5, pady=5, columnspan=1)
         self.ent_height = tk.Entry(self.dialog)
-        self.ent_height.grid(row=1, column=1, padx=5, pady=5)
+        self.ent_height.grid(row=2, column=1, padx=5, pady=5)
         self.ent_height.insert(0, str(self.interface.height))
 
         # Crie a entrada de velocidade
         lbl_speed = tk.Label(self.dialog, text="Aumentar velocidade\nem quantas vezes:")
-        lbl_speed.grid(row=2, column=0, padx=5, pady=5)
+        lbl_speed.grid(row=3, column=0, padx=5, pady=5)
         self.ent_speed = tk.Entry(self.dialog)
-        self.ent_speed.grid(row=2, column=1, padx=5, pady=5)
+        self.ent_speed.grid(row=3, column=1, padx=5, pady=5)
         self.ent_speed.insert(0, str(self.interface.speed))
 
         # Crie a caixa de seleção de qualidade
         lbl_quality = tk.Label(self.dialog, text="Tempo de Renderização \n(Interfere na Qualidade):")
-        lbl_quality.grid(row=3, column=0, padx=5, pady=5)
+        lbl_quality.grid(row=4, column=0, padx=5, pady=5)
         self.quality_var = tk.StringVar(self.dialog)
         self.quality_var.set(self.interface.quality)
         self.cmb_quality = ttk.OptionMenu(self.dialog, self.quality_var, self.interface.quality, *[
             "ultrafast", "superfast", "veryfast", 
             "faster", "medium", "slow", "slower", "veryslow"
         ])
-        self.cmb_quality.grid(row=3, column=1, padx=5, pady=5)
+        self.cmb_quality.grid(row=4, column=1, padx=5, pady=5)
 
         # Inversao
         lbl_direction = tk.Label(self.dialog, text="Direção:")
-        lbl_direction.grid(row=4, column=0, padx=5, pady=5)
+        lbl_direction.grid(row=5, column=0, padx=5, pady=5)
         self.direction_var = tk.StringVar(self.dialog)
         self.direction_var.set("normal")
         self.cmb_direction = ttk.OptionMenu(self.dialog, self.direction_var, "normal", *[
             "normal", "inverse"
         ])
-        self.cmb_direction.grid(row=4, column=1, padx=5, pady=5)
+        self.cmb_direction.grid(row=5, column=1, padx=5, pady=5)
+
+        # Crie a checkbox para incluir áudio
+        self.chk_include_audio_value = tk.BooleanVar(value=self.interface.include_audio)
+        self.chk_include_audio = tk.Checkbutton(self.dialog, text="Incluir Áudio", variable=self.chk_include_audio_value)
+        self.chk_include_audio.grid(row=6, columnspan=2, padx=5, pady=5)
 
         # Crie os botões Cancelar/Salvar
         btn_cancel = tk.Button(self.dialog, text="Cancelar", command=self.cancel)
-        btn_cancel.grid(row=5, column=0, padx=5, pady=5)
+        btn_cancel.grid(row=7, column=0, padx=5, pady=5)
         btn_save = tk.Button(self.dialog, text="Iniciar", command=self.save_settings)
-        btn_save.grid(row=5, column=1, padx=5, pady=5)
+        btn_save.grid(row=7, column=1, padx=5, pady=5)
 
         self.quality_var.set(self.interface.quality)
         self.dialog.mainloop()
 
+    def cycle_resolution(self):
+        self.current_resolution_index = (self.current_resolution_index + 1) % len(self.resolutions)
+        resolution = self.resolutions[self.current_resolution_index]
+        self.ent_width.delete(0, tk.END)
+        self.ent_width.insert(0, resolution[0])
+        self.ent_height.delete(0, tk.END)
+        self.ent_height.insert(0, resolution[1])
 
     def cancel(self):
         self.interface.is_cancel = True
         self.destroy()
 
-    
     def destroy(self):
         self.dialog.destroy()
         self.parent.destroy()
         self.parent.quit()
-    
 
     def save_settings(self):
-        # Obtenha os valores de largura, altura, velocidade e qualidade
+        # Obtenha os valores de largura, altura, velocidade, qualidade e incluir áudio
         width = self.ent_width.get()
         height = self.ent_height.get()
         speed = self.ent_speed.get()
         quality = self.quality_var.get()
         direction = self.direction_var.get()
+        include_audio = self.chk_include_audio_value.get()
 
         # Valide os valores inseridos pelo usuário
         if not width or not height or not speed:
@@ -190,5 +214,6 @@ class VideoSettingsDialog:
         self.interface.speed = speed
         self.interface.quality = quality
         self.interface.direction = direction
+        self.interface.include_audio = include_audio  # Salva a configuração de áudio
         
         self.destroy()
