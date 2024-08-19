@@ -35,7 +35,18 @@ class Interface:
         videos: tuple[str] | Literal[''] = filedialog.askopenfilenames(
             title="Selecione as gravações", 
             filetypes=(
-                ("Arquivos DAV", "*.dav"), 
+                ("Arquivos de vídeo", "*.mp4 *.avi *.mov *.mkv *.wmv *.flv *.mpeg *.webm *.3gp *.m4v *.dav"),
+                ("Arquivos MP4", "*.mp4"),
+                ("Arquivos AVI", "*.avi"),
+                ("Arquivos MOV", "*.mov"),
+                ("Arquivos MKV", "*.mkv"),
+                ("Arquivos WMV", "*.wmv"),
+                ("Arquivos FLV", "*.flv"),
+                ("Arquivos MPEG", "*.mpeg"),
+                ("Arquivos WEBM", "*.webm"),
+                ("Arquivos 3GP", "*.3gp"),
+                ("Arquivos M4V", "*.m4v"),
+                ("Arquivos DAV", "*.dav"),
                 ("Todos os arquivos", "*.*")
             )
         )
